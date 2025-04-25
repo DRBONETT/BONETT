@@ -1,0 +1,226 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transforma tu Salud y tus Ingresos | 4Life</title>
+  <meta name="description" content="Transforma tu salud y tus ingresos con 4Life. Descubre productos de bienestar y oportunidades de negocio desde casa.">
+  <meta name="keywords" content="4Life, salud, bienestar, ingresos desde casa, suplementos">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 400;
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+      color: #333;
+    }
+    header {
+      background: #e6f0fa;
+      text-align: center;
+      padding: 60px 20px;
+    }
+    header h1 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      font-size: 2.5rem;
+      color: #005670;
+      text-transform: uppercase;
+    }
+    header p {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 400;
+      font-size: 1.2rem;
+      margin: 20px 0;
+    }
+    .btn-primary {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      background: #005670;
+      color: white;
+      padding: 15px 25px;
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 10px;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+    .section {
+      padding: 50px 20px;
+      text-align: center;
+    }
+    .benefits, .form-section {
+      background: #e9f1f8;
+    }
+    .benefits h2, .form-section h2 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      color: #003087;
+      text-transform: uppercase;
+    }
+    .benefits ul {
+      list-style: none;
+      padding: 0;
+      font-size: 1.1rem;
+    }
+    .benefits li {
+      margin: 10px 0;
+    }
+    form {
+      max-width: 500px;
+      margin: 0 auto;
+      text-align: left;
+    }
+    input, button {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 400;
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      font-weight: 700;
+      background-color: #0288d1;
+      color: white;
+      border: none;
+      text-transform: uppercase;
+    }
+    .thankyou {
+      display: none;
+      background-color: #e1f5fe;
+      text-align: center;
+      padding: 30px;
+    }
+    .thankyou h2 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .thankyou a {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      color: #01579b;
+      text-decoration: none;
+      display: block;
+      margin: 10px 0;
+    }
+    iframe {
+      width: 100%;
+      max-width: 560px;
+      height: 315px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🧬 Transforma tu Salud y tus Ingresos desde Casa con 4Life 🌱</h1>
+    <p>Descubre cómo fortalecer tu sistema inmune y crear ingresos con productos respaldados por la ciencia</p>
+    <a href="#formulario" class="btn-primary">Quiero Saber Más</a>
+  </header>
+
+  <section class="section">
+    <h2>🎥 Mira este video de 2 minutos</h2>
+    <p>Te explico cómo 4Life está cambiando vidas en toda Latinoamérica</p>
+    <iframe src="https://www.youtube.com/embed/Kj6ylIlxM6A" title="Video de Presentación 4Life" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+  </section>
+
+  <section class="section benefits">
+    <h2>¿Por qué unirte a esta comunidad de bienestar?</h2>
+    <ul>
+      <li>✅ Productos premium con respaldo científico</li>
+      <li>✅ Suplementos que mejoran defensas, piel, energía y salud celular</li>
+      <li>✅ Sistema de ingresos desde casa, sin jefes ni horarios</li>
+      <li>✅ Acompañamiento personalizado y entrenamiento digital</li>
+      <li>✅ Equipo en crecimiento en toda Latinoamérica</li>
+    </ul>
+  </section>
+
+  <section class="section form-section" id="formulario">
+    <h2>💥 ¿List@ para transformar tu vida?</h2>
+    <p>Déjame tus datos y te enviaré la información completa:</p>
+    <form id="contactForm" onsubmit="submitForm(event)">
+      <input type="text" name="entry.1530113951" placeholder="Tu nombre" required>
+      <input type="email" name="entry.2130363285" placeholder="Tu correo electrónico" required>
+      <input type="tel" name="entry.117218404" placeholder="Tu WhatsApp" required>
+      <button type="submit">Sí, quiero recibir más información</button>
+    </form>
+  </section>
+
+  <div class="thankyou" id="gracias">
+    <h2>🎉 ¡Gracias por tu interés!</h2>
+    <p>Haz clic abajo para escribirme directamente en WhatsApp:</p>
+    <a href="https://wa.me/573209793450?text=Hola,%20vi%20tu%20informaci%C3%B3n%20sobre%20salud%20y%20negocios.%20%C2%A1Quiero%20saber%20m%C3%A1s!" target="_blank">📲 Hablemos ahora en WhatsApp</a>
+    <p>O visita mi Linktree para más información:</p>
+    <a href="https://linktr.ee/drbonett" target="_blank">🌐 Explora más en Linktree</a>
+  </div>
+
+  <script>
+    function submitForm(event) {
+      event.preventDefault();
+
+      const form = document.getElementById('contactForm');
+      const formData = new FormData(form);
+
+      fetch('https://docs.google.com/forms/d/e/1FAIpQLScXtJ1Cduqc612EzAD9PnU0MoE1yw2mBqOfFCYUSRinq487_Q/formResponse', {
+        method: 'POST',
+        body: formData,
+        mode: 'no-cors'
+      })
+      .then(() => {
+        document.querySelector('.form-section').style.display = 'none';
+        document.getElementById('gracias').style.display = 'block';
+      })
+      .catch(error => {
+        console.error('Error al enviar el formulario:', error);
+        document.querySelector('.form-section').style.display = 'none';
+        document.getElementById('gracias').style.display = 'block';
+      });
+    }
+  </script>
+</body>
+</html>
